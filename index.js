@@ -63,7 +63,20 @@ async function run() {
 
     //backed related
     app.get("/services", async (req, res) => {
-      const cursor = serviceCollection.find();
+      const sort = req.query.sort;
+      const search = req.query.search;
+      // console.log(search);
+      // query = {};
+      const query = {
+        title: { $regex: search, $options: "i" },
+      };
+      // const query = { price: { $lt: 50, $gte: 100 } };
+      // const query = { price: { $lt: 50 } };
+      const options = {
+        // sort matched documents in descending order by rating
+        sort: { price: sort === "asc" ? 1 : -1 },
+      };
+      const cursor = serviceCollection.find(query, options);
       const result = await cursor.toArray();
       res.send(result);
     });
